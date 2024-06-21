@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
+
 import axios from 'axios';
 import './Category.css';
+import { Link } from 'react-router-dom';
 
 function Category() {
   const [categories, setCategories] = useState([]);
@@ -28,7 +30,12 @@ function Category() {
         <div className="content-container">
           <div className="category-header">
             <h2>Category</h2>
-            <button className="add-new-btn">Add New</button>
+            <button className="add-new-btn">
+              <Link to='/addcategory'>
+               Add New
+              </Link>add
+             </button>
+            
           </div>
           <table className="category-table">
             <thead>
@@ -42,12 +49,12 @@ function Category() {
             </thead>
             <tbody>
               {categories.map(category => (
-                <tr key={category.id}>
-                  <td>{category.id}</td>
-                  <td>{category.name}</td>
-                  <td><img src={category.image} alt={category.name} className="category-image" /></td>
-                  <td className={category.status === 'Active' ? 'status-active' : 'status-inactive'}>
-                    {category.status}
+                <tr key={category.cat_id}>
+                  <td>{category.cat_id}</td>
+                  <td>{category.cat_name}</td>
+                  <td><img src={category.cat_image} alt={category.cat_name} className="category-image" /></td>
+                  <td className={category.cat_status === 'Active' ? 'status-active' : 'status-inactive'}>
+                    {category.cat_status}
                   </td>
                   <td className="action-buttons">
                     <button className="edit-btn">✏️</button>

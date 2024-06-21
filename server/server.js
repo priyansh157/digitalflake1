@@ -6,6 +6,8 @@ const path = require("path");
 const { Console } = require("console");
 const jwt = require("jsonwebtoken");
 const app = express();
+const multer = require("multer");
+const fs = require("fs");
 //path.resolve()
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
@@ -81,7 +83,6 @@ app.post("/login", async (req, res) => {
 app.get('/test', auth, async (req, res) => {
   try {
     
-
   } catch (error) {
     console.log(error);
   }
@@ -89,17 +90,59 @@ app.get('/test', auth, async (req, res) => {
 
 app.use(cors());
 
-const categories = [
-  { id: 1, name: 'Mobile', image: 'mobile.jpg', status: 'Active' },
-  { id: 2, name: 'Laptop', image: 'laptop.jpg', status: 'Inactive' },
-  { id: 3, name: 'Grocery', image: 'grocery.jpg', status: 'Inactive' },
-];
+// const categories = [
+//   { id: 1, name: 'Mobile', image: '/images/mobile.jpg', status: 'Active' },
+//   { id: 2, name: 'Laptop', image: '/images/laptop.jpg', status: 'Active' },
+//   { id: 3, name: 'Grocery', image: '/images/grocery.jpg', status: 'Active' },
+// ];
 
-app.get('/categories', (req, res) => {
-  res.json(categories);
+// app.get('/categories', (req, res) => {
+//   res.json(categories);
+// });
+
+// Configure multer for file uploads
+const clientUploadDir = path.join(__dirname, '../client/public/uploads');
+if (!fs.existsSync(clientUploadDir)) {
+  fs.mkdirSync(clientUploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Upload directory
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname); // Unique filename
+  }
 });
 
+const upload = multer({ storage: storage });
 
+app.post('/categories', upload.single('image'), (req, res) => {
+  const { name, status } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+  const sql = "INSERT INTO category (cat_name, cat_image, cat_status) VALUES (?, ?, ?)";
+
+  db.query(sql, [name, image, status], (err, result) => {
+    if (err) {
+      console.error("Database query error: ", err); // Log the error details
+      return res.status(500).send({ message: "Error adding category" });
+    }
+   
+    res.send({ success: true, message: "Category added successfully" });
+  });
+});
+
+app.get('/categories', (req, res) => {
+  const sql = "SELECT * FROM category";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ message: "Error retrieving categories" });
+    }
+    res.json(results);
+  });
+});
 
 
 app.listen(port, () => {

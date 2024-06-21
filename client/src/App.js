@@ -22,7 +22,7 @@ function App() {
         <Route path="/category" element={<ProtectedRoute><Category /></ProtectedRoute>} />
         <Route path="/subcategory" element={<ProtectedRoute><Subcategory /></ProtectedRoute>} />
         <Route path="/products" element={<ProtectedRoute><Product /></ProtectedRoute>} />
-        {/* <Route path="/add-category" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} /> */}
+         <Route path="/addcategory" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} /> 
       </Routes>
     </BrowserRouter>
   );
